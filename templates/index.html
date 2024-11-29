@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DocPal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+      /* Custom Mobile Styles */
+      @media (max-width: 767px) {
+        .myimg {
+          width: 80%;
+          height: auto;
+        }
+        .card-body {
+          font-size: 14px;
+          padding: 0.5rem;
+        }
+        .form-group {
+          margin-bottom: 1rem;
+        }
+        .btn-custom {
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <div class="logo">
+          <img class="myimg" src="{{ url_for('static', filename='Doc.png') }}" alt="Logo">
+        </div>
+        <a class="navbar-brand" href="#">Doc Pal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/index">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/contact">Contact</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/developer">Developer</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/blog">Blog</a>
+            </li>
+          </ul>
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <h1 class="text-center my-4">Ask Doc Pal</h1>
+      
+      <!-- Form Section -->
+      <form action="/predict" method="post" class="text-center row">
+        <div class="form-group mb-3 col-md-8 col-sm-12">
+          <label for="symptoms" class="form-label">Enter Symptoms: </label>
+          <input type="text" class="form-control" id="symptoms" name="symptoms" placeholder="Enter your symptoms" required>
+        </div>
+        <button type="submit" class="btn btn-primary col-md-4 col-sm-12">Submit</button>
+      </form>
+
+      <!-- Results Section -->
+      {% if predicted_disease %}
+      <div class="results mt-5 text-center">
+        <h2 class="text-primary fade-in">Doc Pal's Prediction</h2>
+        
+        <!-- Navigation Buttons -->
+        <div class="d-flex justify-content-center flex-wrap mb-4">
+          <button class="btn btn-outline-primary btn-custom" onclick="showSection('disease')">Disease</button>
+          <button class="btn btn-outline-info btn-custom" onclick="showSection('description')">Description</button>
+          <button class="btn btn-outline-danger btn-custom" onclick="showSection('precaution')">Precautions</button>
+          <button class="btn btn-outline-success btn-custom" onclick="showSection('medication')">Medication</button>
+          <button class="btn btn-outline-warning btn-custom" onclick="showSection('diet')">Diet</button>
+          <button class="btn btn-outline-secondary btn-custom" onclick="showSection('workout')">Workout</button>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="result-container" class="mt-4">
+          <div id="disease" class="data-section">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Disease Information</h4>
+                <p class="card-text">{{ predicted_disease }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="description" class="data-section">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Description</h4>
+                <p class="card-text">{{ dis_desc }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="precaution" class="data-section">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Precautions</h4>
+                <ul class="list-group">
+                  {% for item in dis_pre %}
+                    <li class="list-group-item">{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div id="medication" class="data-section">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Medication</h4>
+                <p class="card-text">{{ dis_med | join('') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="diet" class="data-section">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Diet</h4>
+                <p class="card-text">{{ dis_die | join('') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="workout" class="data-section">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Workout</h4>
+                <p class="card-text">{{ dis_wrkout | join('') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="static/script.js"></script>
+  </body>
+</html>

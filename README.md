@@ -1,1 +1,1 @@
-# DOCPAL
+### DOCPAL - AI Health Assistant
